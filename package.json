@@ -1,0 +1,14 @@
+{
+  "name": "ws_chat",
+  "version": "1.0.0",
+  "description": "Basic WebSocket Chat Application",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine-node spec"
+  },
+  "author": "Jack Watson-Hamblin",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^0.6.5"
+  }
+}
