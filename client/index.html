@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebSocket Chat</title>
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css" rel="stylesheet" type="text/css">
+
+    <style>
+#content { width: 600px; margin: 0 auto; }
+    </style>
+
+  </head>
+  <body>
+    <div id="content">
+      <div id="status">
+      </div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script>
+if (WebSocket) {
+  $("#status").html("Connecting...");
+
+  var connectionReconnector, ws;
+
+  var connect = function() {
+    ws = new WebSocket("ws://" + window.location.hostname + ":8080");
+    ws.onopen = function() {
+      clearInterval(connectionReconnector);
+      $("#status").html("Connected");
+    };
+    ws.onclose = function() {
+      $("#status").html("Disconnected... attempting to reconnect");
+      clearInterval(connectionReconnector);
+      connectionReconnector = setInterval(connect, 1000);
+    };
+    ws.onmessage = function(message) {
+      var messageObject = JSON.parse(message.data),
+          action        = messageObject.action,
+          data          = messageObject.data;
+
+      if (action === "pong") {
+        setTimeout(function() {
+          messageObject.action = "ping";
+          ws.send(JSON.stringify(messageObject));
+        }, 1000);
+      }
+
+      console.log(action, data);
+    };
+  };
+
+  connect();
+
+} else {
+  $("#status").html("Your browser is not supported.");
+}
+    </script>
+  </body>
+</html>
